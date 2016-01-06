@@ -1,0 +1,23 @@
+---
+
+- src: jeremyltn.homebrew
+
+- src: jeremyltn.dotfiles
+
+- src: jeremyltn.git-repos
+
+- src: jeremyltn.osx-computername
+
+- src: jeremyltn.osx-oh-my-zsh
+
+- src: jeremyltn.osx-php
+
+- src: jeremyltn.osx-sudoers
+
+- src: jeremyltn.remote-vars
+
+- src: https://github.com/osxstrap/ansible-gitconfig.git
+  name: jeremyltn.gitconfig
+
+- src: https://github.com/osxstrap/ansible-osx-defaults.git
+  name: jeremyltn.osx-defaults
