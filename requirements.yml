@@ -1,5 +1,4 @@
 ---
-
 - src: jeremyltn.homebrew
 
 - src: jeremyltn.dotfiles
@@ -21,3 +20,9 @@
 
 - src: https://github.com/osxstrap/ansible-osx-defaults.git
   name: jeremyltn.osx-defaults
+
+- src: https://github.com/osxstrap/ansible-pip.git
+  name: jeremyltn.pip
+
+- src: https://github.com/osxstrap/ansible-osxstrap-core.git
+  name: jeremyltn.osxstrap-core
