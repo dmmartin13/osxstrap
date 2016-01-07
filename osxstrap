@@ -106,7 +106,7 @@ OPTIONS:
    -i      Install directory path. Default: $INSTALL_DIR
    -r      Git repo URL to install osxstrap from. Default: $REPO_URL
    -d      Install in development mode.
-   -l      Development mode only: path in which to search for git repos of roles, to symlink to the roles directory.
+   -p      Development mode only: path in which to search for git repos of roles, to symlink to the roles directory.
 EOF
 }
 
@@ -258,7 +258,7 @@ do
 			update
             exit 1
 			;;
-		i|-install-dir)
+		i)
 			INSTALL_DIR=$OPTARG
 			;;
 		r)
