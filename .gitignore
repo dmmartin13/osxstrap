@@ -63,9 +63,6 @@ roles/galaxy
 # Playbook for debugging
 playbooks/debugging.yml
 
-# Ansible config is auto generated
-ansible.cfg
-
 # vars files downloaded by install script
 host_vars/
 group_vars/
