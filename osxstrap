@@ -30,7 +30,7 @@ PLAYBOOK_TAGS=""
 PROMPT_SUDO='true'
 PROMPT_VAULT='false'
 GIT_REPO_URL=''
-GIT_REPO_DEST="$HOME/.osxstrap-config"
+GIT_REPO_DEST="$INSTALL_DIR/$CONFIG_DIRNAME/repo"
 REMOTE_YML_URL=''
 AUTO_UPDATE='true'
 LOCAL_YML_PATH=''
@@ -549,6 +549,8 @@ if [ $INSTALL_DIR != $INSTALL_DIR_DEFAULT ] ; then
 		output_debug "Updating roles dir to be a subdirectory of install dir ($INSTALL_DIR/roles)."
 		ROLES_DIR="$INSTALL_DIR/roles"
 	fi
+	output_debug "Updating config git repo dest to be in install config dir ($INSTALL_DIR/$CONFIG_DIRNAME/repo)"
+	GIT_REPO_DEST="$INSTALL_DIR/$CONFIG_DIRNAME/repo"
 fi
 
 OSXSTRAP_CONFIG_PATH="$INSTALL_DIR/$CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME"
