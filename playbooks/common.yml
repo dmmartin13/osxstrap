@@ -1,14 +1,14 @@
 ---
 - hosts: all
   vars_files:
-    - '../../config/osxstrap.yml'
+    - '../config/osxstrap.yml'
   roles:
     - role: jeremyltn.include-vars-dir
       include_vars_dir_paths: ["{{ osxstrap.local_yml_path }}"]
     - role: jeremyltn.remote-vars
       remote_vars_urls:
         - url: "{{ osxstrap.remote_yml_url }}"
-          dest_dir: ../../config/
+          dest_dir: ../config/
           dest_filename: remote.yml
           force: "{{ osxstrap.auto_update | default(yes) }}"
     - role: jeremyltn.git-repos
@@ -18,4 +18,4 @@
     - role: jeremyltn.include-vars-dir
       include_vars_dir_paths:
         - "{{ osxstrap.git_repo.dest }}"
-        - "../../config"
+        - "../config"
