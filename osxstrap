@@ -254,7 +254,7 @@ function install_roles {
 			DEST_PATH="$ROLES_DIR/$DEST_FILE"
 			if [ -d "$INSTALL_DIR/.git" ]; then
 				output_running "Linking '$SRC_PATH' to '$DEST_PATH'."
-				warn_on_error "ln -s -F -f $SRC_PATH $DEST_PATH"
+				warn_on_error "ln -s $SRC_PATH $DEST_PATH"
 			fi
 		done
 	else
