@@ -210,7 +210,7 @@ function install_pip {
 function install_ansible {
 	output_header "Installing Ansible"
 	if ! exists ansible; then
-		fail_on_error "sudo pip install ansible"
+		fail_on_error "sudo pip install -I ansible==1.9.4"
 		if ! exists ansible; then
 			error "Error installing Ansible."
 		else
