@@ -13,15 +13,41 @@ WHITE='\e[1;37m'
 COLOR_OFF='\e[0m'
 
 # Command line arg defaults
+REPO_URL="https://github.com/osxstrap/osxstrap"
 VERBOSE=0
 DEV_INSTALL=0
 DEV_ROLE_SEARCH_PATH="/vagrant/osxstrap"
+SKIP_ROLE_INSTALL=0
 INSTALL_DIR="$HOME/.osxstrap"
-REPO_URL="https://github.com/osxstrap/osxstrap"
+INSTALL_DIR_DEFAULT=$INSTALL_DIR
+ROLES_DIR="$INSTALL_DIR/roles"
+ROLES_DIR_DEFAULT=$ROLES_DIR
+FORCE_CREATE_OSXSTRAP_CONFIG=0
+FORCE_SUDO_PROMPT=0
 
-# Constants
+# Config file defaults
+PROMPT_SUDO='false'
+PROMPT_VAULT='false'
+GIT_REPO_URL=''
+GIT_REPO_DEST=''
+REMOTE_YML_URL=''
+AUTO_UPDATE='true'
+LOCAL_YML_PATH=''
+
+# Confirm confirm defaults
+GIT_REPO_ENABLE='false'
+REMOTE_YML_URL_ENABLE='false'
+LOCAL_YML_PATH_ENABLE='false'
+
 DEV_ROLE_NAME_SEARCH_STRING="ansible-"
 DEV_ROLE_NAME_REPLACE_STRING="jeremyltn."
+
+CONFIG_DIRNAME="config"
+OSXSTRAP_CONFIG_FILENAME="osxstrap.yml"
+
+ORIGINAL_PWD=$PWD
+
+OPTS="vduhsxki:r:l:p:"
 
 function output_running {
 	printf "${PURPLE}--> ${COLOR_OFF}$1\n" 1>&2
@@ -64,7 +90,7 @@ printf "${PURPLE}  \___/ |___//_/\_\|___/ \__||_|   \__,_|| .__/ ${COLOR_OFF}\n"
 printf "${PURPLE}                                         | |    ${COLOR_OFF}\n"
 printf "${PURPLE}                                         |_|    ${COLOR_OFF}\n"
 printf "${PURPLE}                             http://osxstrap.org${COLOR_OFF}\n\n"
-printf "${DARK_GRAY}Thanks:${COLOR_OFF}\n${BLUE}http://superlumic.com\nhttps://github.com/boxcutter/osx\nhttp://patorjk.com/software/taag${COLOR_OFF}\n\n"
+printf "${DARK_GRAY}Thanks:${COLOR_OFF}\n${BLUE}http://superlumic.com\nhttps://github.com/boxcutter/osx\nhttp://patorjk.com/software/taag\nhttps://gist.github.com/pkuczynski/8665367${COLOR_OFF}\n\n"
 }
 
 # Check whether a command exists - returns 0 if it does, 1 if it does not
@@ -100,13 +126,16 @@ usage: $0 options
 
 OPTIONS:
    -h      Show this message.
-
    -v      Enable verbose output.
+   -p      Name of a playbook inside of 'osxstrap/playbooks' (file name without the .yml extension) to be run. i.e. osxstrap -p sys/osx-computername
+   -k      Force the ansible-playbook command to prompt for a sudo password. Overrides the osxstrap[\'prompt_sudo\'] var.
    -u      Update osxstrap using git and roles using ansible-galaxy.
    -i      Install directory path. Default: $INSTALL_DIR
    -r      Git repo URL to install osxstrap from. Default: $REPO_URL
    -d      Install in development mode.
-   -p      Development mode only: path in which to search for git repos of roles, to symlink to the roles directory.
+   -l      Development mode only: path in which to search for git repos of roles, to symlink to the roles directory.
+   -s      Skip role install.
+   -x      Force interactive creation of $CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME, even if it already exists.
 EOF
 }
 
@@ -209,39 +238,205 @@ function install_osxstrap {
 
 function install_roles {
 	output_header "Installing/Updating Ansible roles"
+	output_running "Creating roles directory '$ROLES_DIR'."
+	warn_on_error "mkdir -p $ROLES_DIR"
+	
 	if [ "$DEV_INSTALL" = 1 ]; then
-		output_running "Creating development roles directory '$INSTALL_DIR/roles'."
-		warn_on_error "mkdir -p $INSTALL_DIR/roles"
 
 		#output_running "Installing Ansible roles from requirements-dev.yml."
-		#warn_on_error "ansible-galaxy install -r requirements-dev.yml -p $INSTALL_DIR/roles"
+		#warn_on_error "ansible-galaxy install -r requirements-dev.yml -p $ROLES_DIR"
 		
-		output_running "Symlinking role repos in '$DEV_ROLE_SEARCH_PATH' to '$INSTALL_DIR/roles' for development."
+		output_running "Symlinking role repos in '$DEV_ROLE_SEARCH_PATH' to '$ROLES_DIR' for development."
 		cd $DEV_ROLE_SEARCH_PATH
 		for f in ansible-*; do
 			SRC_PATH="$PWD/$f"
 			DEST_FILE="${f/$DEV_ROLE_NAME_SEARCH_STRING/$DEV_ROLE_NAME_REPLACE_STRING}"
-			DEST_PATH="$INSTALL_DIR/roles/$DEST_FILE"
-		    if [ -d "$INSTALL_DIR/.git" ]; then
-		    	output_running "Linking '$SRC_PATH' to '$DEST_PATH'."
-		    	warn_on_error "ln -s -F -f $SRC_PATH $DEST_PATH"
-		    fi
+			DEST_PATH="$ROLES_DIR/$DEST_FILE"
+			if [ -d "$INSTALL_DIR/.git" ]; then
+				output_running "Linking '$SRC_PATH' to '$DEST_PATH'."
+				warn_on_error "ln -s -F -f $SRC_PATH $DEST_PATH"
+			fi
 		done
 	else
 		output_running "Installing Ansible roles from requirements.yml."
-		fail_on_error "ansible-galaxy install -f -r requirements.yml"
+		fail_on_error "ansible-galaxy install -f -r requirements.yml -p $ROLES_DIR"
 	fi
 }
 
+function copy_config {
+	output_header "Copying config files"
+	if [ "$DEV_INSTALL" = 1 ]; then
+		output_skip "config files not automatically copied in development mode."
+		return 0
+	fi
+
+	if [ -d "$ORIGINAL_PWD/$CONFIG_DIRNAME" ]; then
+		output_debug "Found $CONFIG_DIRNAME directory next to current script ($ORIGINAL_PWD/$CONFIG_DIRNAME)."
+		output_running "Copying files in '$ORIGINAL_PWD/$CONFIG_DIRNAME' to '$INSTALL_DIR/$CONFIG_DIRNAME'."
+		warn_on_error "cp -r $ORIGINAL_PWD/$CONFIG_DIRNAME/* $INSTALL_DIR/$CONFIG_DIRNAME/"
+	else
+		output_debug "Did not find $CONFIG_DIRNAME directory next to current script ($ORIGINAL_PWD/$CONFIG_DIRNAME), nothing to copy."
+	fi
+}
+
+function check_osxstrap_config {
+	if [ -f "$OSXSTRAP_CONFIG_PATH" ]; then
+		output_debug "Found $OSXSTRAP_CONFIG_FILENAME at '$OSXSTRAP_CONFIG_PATH'."
+		load_osxstrap_config
+		if [ $FORCE_CREATE_OSXSTRAP_CONFIG = 1 ]; then
+			output_debug "Forcing creation of osxstrap config."
+			create_osxstrap_config
+		fi
+		return 0
+	else
+		output_running "The main osxstrap config file was not found at '$OSXSTRAP_CONFIG_PATH'."
+		read -p "Would you like to create one interactively? (y/n) " -r
+		echo
+		if [[ $REPLY =~ ^[Yy]$ ]]
+		then
+			create_osxstrap_config
+		else
+			output_warning "Without the osxstrap config, its likely that all this script will do is install dependencies, not provision your machine."
+		fi
+	fi
+}
+
+function parse_yaml {
+	# Credit: https://gist.github.com/pkuczynski/8665367
+	local prefix=''
+   	local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+    sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+    awk -F$fs '{
+       	indent = length($1)/2;
+       	vname[indent] = $2;
+       	for (i in vname) {if (i > indent) {delete vname[i]}}
+       	if (length($3) > 0) {
+         	vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         	printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+         	#$(printf("%s%s%s", "'$prefix'",vn, $2)) = "$3"
+      	}
+   	}'
+}
+
+function load_osxstrap_config {
+	output_header "Loading osxstrap config"
+	if [ ! -f "$OSXSTRAP_CONFIG_PATH" ]; then
+		output_skip "osxstrap config file path ($OSXSTRAP_CONFIG_PATH) does not exist."
+	fi
+	
+   	eval $(parse_yaml $OSXSTRAP_CONFIG_PATH)
+   	PROMPT_SUDO=$osxstrap_prompt_sudo
+	PROMPT_VAULT=$osxstrap_prompt_vault
+	GIT_REPO_URL=$osxstrap_git_repo_repo
+	GIT_REPO_DEST=$osxstrap_git_repo_dest
+	REMOTE_YML_URL=$osxstrap_remote_yml_url
+	AUTO_UPDATE=$osxstrap_auto_update
+	LOCAL_YML_PATH=$osxstrap_local_yml_path
+	output_success "osxstrap config loaded from '$OSXSTRAP_CONFIG_PATH'"
+}
+
+function get_bool_default {
+	EVAL_STRING=${1:-false}
+	if [ $EVAL_STRING = 'true' ] ; then
+		echo 'y'
+	elif [ $EVAL_STRING = 'false' ] ; then
+		echo 'n'
+	elif [ $EVAL_STRING != "" ] ; then
+		echo 'y'
+	else
+		echo 'n'
+	fi
+}
+
+function confirm {
+	CONFIG_VAR_DEFAULT=${3:-none}
+	if [ $CONFIG_VAR_DEFAULT != "none" ] ; then
+		DEFAULT_EVAL_STRING=$(eval "echo \$$CONFIG_VAR_DEFAULT")	
+	else
+		DEFAULT_EVAL_STRING=$(eval "echo \$$2")
+	fi
+	DEFAULT=$(get_bool_default $DEFAULT_EVAL_STRING)
+	read -p "$1 (y/n) [$DEFAULT]:" -r
+	echo
+	REPLY=${REPLY:-$DEFAULT}
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+		eval "$2='true'"
+	else
+		eval "$2='false'"
+	fi
+}
+
+function create_osxstrap_config {
+	output_header "Create osxstrap config"
+
+	confirm "Prompt for sudo password (should be yes unless you have passwordless sudo enabled already)?" PROMPT_SUDO
+	confirm "Prompt for vault password (only needed if you plan on loading Ansible vault encrypted files)?" PROMPT_VAULT
+	confirm "Clone a remote git repository and include .yml variables files it contains?" GIT_REPO_ENABLE GIT_REPO_URL
+	if [ $GIT_REPO_ENABLE = 'true' ] ; then
+		read -e -p "URL to clone the git repository from [$GIT_REPO_URL]: " GIT_REPO_URL_REPLY
+		GIT_REPO_URL=${GIT_REPO_URL_REPLY:-$GIT_REPO_URL}
+		echo
+		read -e -p "Local path to clone the git repository to [$GIT_REPO_DEST]: " GIT_REPO_DEST_REPLY
+		GIT_REPO_DEST=${GIT_REPO_DEST_REPLY:-$GIT_REPO_DEST}
+		echo
+	fi
+	confirm "Download and include a single .yml variables file over http(s)?" REMOTE_YML_URL_ENABLE REMOTE_YML_URL
+	if [ $REMOTE_YML_URL_ENABLE = 'true' ] ; then
+		read -e -p "URL to download file from [$REMOTE_YML_URL]: " REMOTE_YML_URL
+		echo
+	fi
+	confirm "Automatically check for updates to remotely sourced .yml files (applies to both those downloaded via http(s) and those contained in git repos)?" AUTO_UPDATE
+	confirm "Load .yml files from an additional path on the local machine?" LOCAL_YML_PATH_ENABLE LOCAL_YML_PATH
+	if [ $LOCAL_YML_PATH_ENABLE = 'true' ] ; then
+		read -e -p "Local path to directory containing .yml files or to a single .yml file [$LOCAL_YML_PATH]: " LOCAL_YML_PATH
+	fi
+	cat > $OSXSTRAP_CONFIG_PATH <<- EOM
+---
+osxstrap:
+  prompt_sudo: $PROMPT_SUDO
+  prompt_vault: $PROMPT_VAULT
+  git_repo:
+    repo: $GIT_REPO_URL
+    dest: $GIT_REPO_DEST
+  remote_yml_url: $REMOTE_YML_URL
+  auto_update: $AUTO_UPDATE
+  local_yml_path: $LOCAL_YML_PATH
+	EOM
+	echo
+	if [ -f "$OSXSTRAP_CONFIG_PATH" ]; then
+		output_success "Created '$OSXSTRAP_CONFIG_PATH'."
+	fi
+}
+
+function run_playbook {
+	cd $ORIGINAL_PWD
+	PLAYBOOK_PATH="playbooks/$1.yml"
+	if [ ! -f "$PLAYBOOK_PATH" ]; then
+		error "Playbook path '$PLAYBOOK_PATH' does not exist."
+	fi
+	PLAYBOOK_COMMAND="ansible-playbook"
+	if [ "$PROMPT_SUDO" = "true" ] || [ "$FORCE_SUDO_PROMPT" = 1 ]; then
+		PLAYBOOK_COMMAND+=" --ask-sudo-pass"
+	fi
+	if [ "$PROMPT_VAULT" = "true" ]; then
+		PLAYBOOK_COMMAND+=" --ask-vault-pass"
+	fi
+	PLAYBOOK_COMMAND+=" $PLAYBOOK_PATH"
+	echo "$PLAYBOOK_COMMAND"
+	fail_on_error "$PLAYBOOK_COMMAND"
+}
+
 function update {
-    output_running "Running update only."
-    install_osxstrap
-    install_roles
+	output_running "Running update only."
+	install_osxstrap
+	install_roles
 }
 
 banner
 
-while getopts "vduhi:r:p:" OPTION
+while getopts "$OPTS" OPTION
 do
 	case $OPTION in
 		h)
@@ -254,9 +449,18 @@ do
 		v)
 			VERBOSE=1
 			;;
+		s)
+			SKIP_ROLE_INSTALL=1
+			;;
+		x)
+			FORCE_CREATE_OSXSTRAP_CONFIG=1
+			;;
+		k)
+			FORCE_SUDO_PROMPT=1
+			;;
 		u)
 			update
-            exit 1
+			exit 1
 			;;
 		i)
 			INSTALL_DIR=$OPTARG
@@ -265,6 +469,10 @@ do
 			REPO_URL=$OPTARG
 			;;
 		p)
+			run_playbook $OPTARG
+			exit 1
+			;;
+		l)
 			DEV_ROLE_SEARCH_PATH=$OPTARG
 			;;
 		?)
@@ -278,12 +486,21 @@ if [ "$DEV_INSTALL" = 1 ] ; then
 	output_debug "Detected dev install (-d) flag."
 	output_debug "Setting install directory to directory of this script ($PWD) for development."
 	INSTALL_DIR=$PWD
-
 fi
 
 if [ "$VERBOSE" = 1 ] ; then
 	output_debug "Detected verbose (-v) flag."
 fi
+
+if [ $INSTALL_DIR != $INSTALL_DIR_DEFAULT ] ; then
+	output_debug "Detected changed install dir."
+	if [ $ROLES_DIR = $ROLES_DIR_DEFAULT ] ; then
+		output_debug "Updating roles dir to be a subdirectory of install dir ($INSTALL_DIR/roles)."
+		ROLES_DIR="$INSTALL_DIR/roles"
+	fi
+fi
+
+OSXSTRAP_CONFIG_PATH="$INSTALL_DIR/$CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME"
 
 output_debug "Install directory is '$INSTALL_DIR'."
 
@@ -307,6 +524,12 @@ install_ansible
 
 install_osxstrap
 
-install_roles
+if [ $SKIP_ROLE_INSTALL != 1 ] ; then
+	install_roles
+fi
 
-#move vars files
+copy_config
+
+check_osxstrap_config
+
+run_playbook "all"
