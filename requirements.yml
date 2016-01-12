@@ -23,6 +23,3 @@
 
 - src: https://github.com/osxstrap/ansible-pip.git
   name: jeremyltn.pip
-
-- src: https://github.com/osxstrap/ansible-osxstrap-core.git
-  name: jeremyltn.osxstrap-core
