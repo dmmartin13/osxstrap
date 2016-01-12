@@ -12,6 +12,7 @@
 - include: osx-sudoers.yml
 
 - include: homebrew.yml
+- include: osx-sublimetext.yml
 - include: osx-php.yml
 - include: pip.yml
 - include: rbenv.yml

@@ -35,3 +35,6 @@
 
 - src: https://github.com/osxstrap/ansible-osx-node.git
   name: jeremyltn.osx-node
+
+- src: https://github.com/osxstrap/ansible-osx-sublimetext.git
+  name: jeremyltn.osx-sublimetext
