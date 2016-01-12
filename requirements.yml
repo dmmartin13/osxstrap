@@ -26,3 +26,12 @@
 
 - src: https://github.com/osxstrap/ansible-include-vars-dir.git
   name: jeremyltn.include-vars-dir
+
+- src: https://github.com/osxstrap/ansible-rbenv.git
+  name: jeremyltn.rbenv
+
+- src: https://github.com/osxstrap/ansible-ruby-gems.git
+  name: jeremyltn.ruby-gems
+
+- src: https://github.com/osxstrap/ansible-osx-node.git
+  name: jeremyltn.osx-node

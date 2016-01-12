@@ -14,5 +14,8 @@
 - include: homebrew.yml
 - include: osx-php.yml
 - include: pip.yml
+- include: rbenv.yml
+- include: ruby-gems.yml
+- include: osx-node.yml
 
 - include: git-repos.yml
