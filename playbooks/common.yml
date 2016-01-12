@@ -3,23 +3,21 @@
   vars_files:
     - '../config/osxstrap.yml'
   roles:
-    - role: jeremyltn.include-vars-dir
-      tags: ['common','always']
-      include_vars_dir_paths: ["{{ osxstrap.local_yml_path }}"]
     - role: jeremyltn.remote-vars
-      tags: ['common','always']
+      tags: ['common']
       remote_vars_urls:
         - url: "{{ osxstrap.remote_yml_url | default('') }}"
           dest_dir: ../config/
           dest_filename: remote.yml
           force: "{{ osxstrap.auto_update | default(yes) }}"
     - role: jeremyltn.git-repos
-      tags: ['common','always']
+      tags: ['common']
       git_repos:
         - dest: "{{ osxstrap.git_repo.dest }}"
           repo: "{{ osxstrap.git_repo.repo }}"
     - role: jeremyltn.include-vars-dir
       tags: ['common','always']
       include_vars_dir_paths:
+        - "{{ osxstrap.local_yml_path }}"
         - "{{ osxstrap.git_repo.dest }}"
         - "../config"
