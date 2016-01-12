@@ -26,7 +26,7 @@ FORCE_CREATE_OSXSTRAP_CONFIG=0
 FORCE_SUDO_PROMPT=0
 
 # Config file defaults
-PROMPT_SUDO='false'
+PROMPT_SUDO='true'
 PROMPT_VAULT='false'
 GIT_REPO_URL=''
 GIT_REPO_DEST=''
@@ -47,7 +47,9 @@ OSXSTRAP_CONFIG_FILENAME="osxstrap.yml"
 
 ORIGINAL_PWD=$PWD
 
-OPTS="vduhsxki:r:l:p:"
+URL_ARG_PRESENT=0
+
+OPTS="vduhsxki:r:l:p:g:u:c:"
 
 function output_running {
 	printf "${PURPLE}--> ${COLOR_OFF}$1\n" 1>&2
@@ -128,6 +130,8 @@ OPTIONS:
    -h      Show this message.
    -v      Enable verbose output.
    -p      Name of a playbook inside of 'osxstrap/playbooks' (file name without the .yml extension) to be run. i.e. osxstrap -p sys/osx-computername
+   -g      URL of a git repo to clone containing configuration files. Will bypass interactive osxstrap config generation. See https://github.com/osxstrap/osxstrap-config for an example. (optional)
+   -c      URL of a configuration file to download. Will bypass interactive osxstrap config generation. (optional)
    -k      Force the ansible-playbook command to prompt for a sudo password. Overrides the osxstrap[\'prompt_sudo\'] var.
    -u      Update osxstrap using git and roles using ansible-galaxy.
    -i      Install directory path. Default: $INSTALL_DIR
@@ -280,6 +284,18 @@ function copy_config {
 }
 
 function check_osxstrap_config {
+	if [ $URL_ARG_PRESENT = 1 ]; then
+		output_debug "GIT_REPO_URL or REMOTE_YML_URL command line arg found. Skipping automatic config generation and using that value + defaults."
+		GIT_REPO_URL_TMP=$GIT_REPO_URL
+		REMOTE_YML_URL_TMP=$REMOTE_YML_URL
+		if [ -f "$OSXSTRAP_CONFIG_PATH" ]; then
+			load_osxstrap_config
+		fi
+		GIT_REPO_URL=$GIT_REPO_URL_TMP
+		REMOTE_YML_URL=$REMOTE_YML_URL_TMP
+		write_osxstrap_config
+		return 0
+	fi
 	if [ -f "$OSXSTRAP_CONFIG_PATH" ]; then
 		output_debug "Found $OSXSTRAP_CONFIG_FILENAME at '$OSXSTRAP_CONFIG_PATH'."
 		load_osxstrap_config
@@ -392,6 +408,11 @@ function create_osxstrap_config {
 	if [ $LOCAL_YML_PATH_ENABLE = 'true' ] ; then
 		read -e -p "Local path to directory containing .yml files or to a single .yml file [$LOCAL_YML_PATH]: " LOCAL_YML_PATH
 	fi
+	write_osxstrap_config
+}
+
+function write_osxstrap_config {
+	output_running "Writing osxstrap config to $OSXSTRAP_CONFIG_PATH."
 	cat > $OSXSTRAP_CONFIG_PATH <<- EOM
 ---
 osxstrap:
@@ -474,6 +495,12 @@ do
 			;;
 		l)
 			DEV_ROLE_SEARCH_PATH=$OPTARG
+			;;
+		g)
+			GIT_REPO_URL=$OPTARG && URL_ARG_PRESENT=1
+			;;
+		c)
+			REMOTE_YML_URL=$OPTARG && URL_ARG_PRESENT=1
 			;;
 		?)
 			usage
