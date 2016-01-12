@@ -293,7 +293,12 @@ function check_osxstrap_config {
 		fi
 		GIT_REPO_URL=$GIT_REPO_URL_TMP
 		REMOTE_YML_URL=$REMOTE_YML_URL_TMP
-		write_osxstrap_config
+		if [ $FORCE_CREATE_OSXSTRAP_CONFIG = 1 ]; then
+			output_debug "Forcing creation of osxstrap config."
+			create_osxstrap_config
+		else
+			write_osxstrap_config
+		fi
 		return 0
 	fi
 	if [ -f "$OSXSTRAP_CONFIG_PATH" ]; then
@@ -400,13 +405,15 @@ function create_osxstrap_config {
 	fi
 	confirm "Download and include a single .yml variables file over http(s)?" REMOTE_YML_URL_ENABLE REMOTE_YML_URL
 	if [ $REMOTE_YML_URL_ENABLE = 'true' ] ; then
-		read -e -p "URL to download file from [$REMOTE_YML_URL]: " REMOTE_YML_URL
+		read -e -p "URL to download file from [$REMOTE_YML_URL]: " REMOTE_YML_URL_REPLY
+		REMOTE_YML_URL=${REMOTE_YML_URL_REPLY:-$REMOTE_YML_URL}
 		echo
 	fi
 	confirm "Automatically check for updates to remotely sourced .yml files (applies to both those downloaded via http(s) and those contained in git repos)?" AUTO_UPDATE
 	confirm "Load .yml files from an additional path on the local machine?" LOCAL_YML_PATH_ENABLE LOCAL_YML_PATH
 	if [ $LOCAL_YML_PATH_ENABLE = 'true' ] ; then
-		read -e -p "Local path to directory containing .yml files or to a single .yml file [$LOCAL_YML_PATH]: " LOCAL_YML_PATH
+		read -e -p "Local path to directory containing .yml files or to a single .yml file [$LOCAL_YML_PATH]: " LOCAL_YML_PATH_REPLY
+		LOCAL_YML_PATH=${LOCAL_YML_PATH_REPLY:-$LOCAL_YML_PATH}
 	fi
 	write_osxstrap_config
 }
