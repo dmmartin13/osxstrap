@@ -23,3 +23,6 @@
 
 - src: https://github.com/osxstrap/ansible-pip.git
   name: jeremyltn.pip
+
+- src: https://github.com/osxstrap/nsible-include-vars-dir.git
+  name: jeremyltn.include-vars-dir
