@@ -22,7 +22,7 @@ osxstrap provides an easier way to provision your OSX El Capitan workstation usi
 -p      Name of a playbook inside of 'osxstrap/playbooks'
         (file name without the .yml extension) to be run.
         i.e. osxstrap -p osx-computername
-        
+
 -t      Run playbook with tags.
 
 -g      URL of a git repo to clone containing 
@@ -56,8 +56,7 @@ osxstrap provides an easier way to provision your OSX El Capitan workstation usi
 
 -s      Skip role install.
 
--x      Force interactive creation of config/osxstrap.yml
-,
+-x      Force interactive creation of config/osxstrap.yml,
         even if it already exists.
 ```
 
