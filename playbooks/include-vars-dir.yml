@@ -2,3 +2,4 @@
 - hosts: all
   roles:
     - role: jeremyltn.include-vars-dir
+      tags: ['include_vars_dir']

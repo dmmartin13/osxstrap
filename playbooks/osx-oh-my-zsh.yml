@@ -2,3 +2,4 @@
 - hosts: all
   roles:
     - role: jeremyltn.osx-oh-my-zsh
+      tags: ['osx_oh_my_zsh']

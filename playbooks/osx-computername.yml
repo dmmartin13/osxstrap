@@ -2,3 +2,4 @@
 - hosts: all
   roles:
     - role: jeremyltn.osx-computername
+      tags: ['osx_computername']

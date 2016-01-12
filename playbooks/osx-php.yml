@@ -2,3 +2,4 @@
 - hosts: all
   roles:
     - role: jeremyltn.osx-php
+      tags: ['osx_php']

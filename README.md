@@ -22,6 +22,8 @@ osxstrap provides an easier way to provision your OSX El Capitan workstation usi
 -p      Name of a playbook inside of 'osxstrap/playbooks'
         (file name without the .yml extension) to be run.
         i.e. osxstrap -p osx-computername
+        
+-t      Run playbook with tags.
 
 -g      URL of a git repo to clone containing 
         configuration files. Will bypass interactive
@@ -74,8 +76,11 @@ Created by [Jeremy Litten](https://github.com/jeremyltn).
 Inspired by
 
 https://github.com/superlumic
+
 https://github.com/spencergibb/ansible-osx
+
 https://github.com/debops
+
 and many others.
 
 See individual repositories at https://github.com/osxstrap for Ansible role credits.
