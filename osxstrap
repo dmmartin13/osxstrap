@@ -439,7 +439,7 @@ osxstrap:
 }
 
 function run_playbook {
-	cd $ORIGINAL_PWD
+	cd $INSTALL_DIR
 	PLAYBOOK_PATH="playbooks/$1.yml"
 	if [ ! -f "$PLAYBOOK_PATH" ]; then
 		error "Playbook path '$PLAYBOOK_PATH' does not exist."
