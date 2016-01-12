@@ -129,7 +129,7 @@ usage: $0 options
 OPTIONS:
    -h      Show this message.
    -v      Enable verbose output.
-   -p      Name of a playbook inside of 'osxstrap/playbooks' (file name without the .yml extension) to be run. i.e. osxstrap -p sys/osx-computername
+   -p      Name of a playbook inside of 'osxstrap/playbooks' (file name without the .yml extension) to be run. i.e. osxstrap -p osx-computername
    -g      URL of a git repo to clone containing configuration files. Will bypass interactive osxstrap config generation. See https://github.com/osxstrap/osxstrap-config for an example. (optional)
    -c      URL of a configuration file to download. Will bypass interactive osxstrap config generation. (optional)
    -k      Force the ansible-playbook command to prompt for a sudo password. Overrides the osxstrap[\'prompt_sudo\'] var.
