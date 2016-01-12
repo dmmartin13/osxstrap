@@ -134,7 +134,7 @@ OPTIONS:
    -t      Run playbook with tags.
    -g      URL of a git repo to clone containing configuration files. Will bypass interactive osxstrap config generation. See https://github.com/osxstrap/osxstrap-config for an example. (optional)
    -c      URL of a configuration file to download. Will bypass interactive osxstrap config generation. (optional)
-   -k      Force the ansible-playbook command to prompt for a sudo password. Overrides the osxstrap[\'prompt_sudo\'] var.
+   -k      Force the ansible-playbook command to prompt for a sudo password. Overrides the osxstrap['prompt_sudo'] var.
    -u      Update osxstrap using git and roles using ansible-galaxy.
    -i      Install directory path. Default: $INSTALL_DIR
    -r      Git repo URL to install osxstrap from. Default: $REPO_URL
@@ -260,7 +260,7 @@ function install_roles {
 			DEST_PATH="$ROLES_DIR/$DEST_FILE"
 			if [ -d "$INSTALL_DIR/.git" ]; then
 				output_running "Linking '$SRC_PATH' to '$DEST_PATH'."
-				warn_on_error "ln -s $SRC_PATH $DEST_PATH"
+				warn_on_error "ln -sfn $SRC_PATH $DEST_PATH"
 			fi
 		done
 	else
