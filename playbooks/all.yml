@@ -1,2 +1,18 @@
 ---
 - include: core/config.yml
+
+- include: cfg/remote-vars.yml
+- include: cfg/include-vars-dir.yml
+- include: cfg/osx-oh-my-zsh.yml
+- include: cfg/gitconfig.yml
+- include: cfg/dotfiles.yml
+- include: cfg/osx-defaults.yml
+
+- include: sys/osx-computername.yml
+- include: sys/osx-sudoers.yml
+
+- include: env/homebrew.yml
+- include: env/osx-php.yml
+- include: env/pip.yml
+
+- include: src/git-repos.yml

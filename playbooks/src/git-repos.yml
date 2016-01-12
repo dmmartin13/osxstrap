@@ -1,0 +1,13 @@
+---
+- hosts: all
+  vars:
+    git_repos:
+      - dest: ~/src/github.com/jeremyltn/osx-dmg-secrets
+        repo: https://github.com/jeremyltn/osx-dmg-secrets
+    git_sources:
+      - dest_base: "~/src/github.com"
+        repo_base: "https://github.com/"
+        repos:
+          - osxstrap/ansible-osx-computername
+  roles:
+    - role: jeremyltn.git-repos
