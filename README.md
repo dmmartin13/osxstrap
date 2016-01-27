@@ -64,6 +64,11 @@ osxstrap provides an easier way to provision your OSX El Capitan workstation usi
 
 ## Development
 
+-d      Install in development mode.
+   -l      Development mode only: path in which to search for git repos of roles, to symlink to the roles directory.
+   -p      Name of a playbook inside of 'osxstrap/playbooks' (file name without the .yml extension) to be run. i.e. osxstrap -p osx-computername
+   -t      Run playbook with tags.
+   
 ## Issues
 
 Please report any issues to this repositories issue tracker https://github.com/osxstrap/osxstrap/issues.

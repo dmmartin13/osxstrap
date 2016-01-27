@@ -1,0 +1,4 @@
+#!/bin/bash
+ORIGINAL_PWD=$PWD
+cd "/Users/jeremylitten/src/github.com/osxstrap/osxstrap" && sh osxstrap "$@" -i "/Users/jeremylitten/src/github.com/osxstrap/osxstrap"
+cd $ORIGINAL_PWD

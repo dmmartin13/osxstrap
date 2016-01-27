@@ -16,7 +16,7 @@ COLOR_OFF='\e[0m'
 REPO_URL="https://github.com/osxstrap/osxstrap"
 VERBOSE=0
 DEV_INSTALL=0
-DEV_ROLE_SEARCH_PATH="/vagrant/osxstrap"
+DEV_ROLE_SEARCH_PATH="$PWD/../"
 SKIP_ROLE_INSTALL=0
 INSTALL_DIR="$HOME/.osxstrap"
 INSTALL_DIR_DEFAULT=$INSTALL_DIR
@@ -24,6 +24,8 @@ ROLES_DIR="$INSTALL_DIR/roles"
 ROLES_DIR_DEFAULT=$ROLES_DIR
 FORCE_CREATE_OSXSTRAP_CONFIG=0
 FORCE_SUDO_PROMPT=0
+CREATE_OSX_APP_SHORTCUT=0
+CREATE_USR_BIN_SHORTCUT=0
 PLAYBOOK_TAGS=""
 
 # Config file defaults
@@ -50,7 +52,7 @@ ORIGINAL_PWD=$PWD
 
 URL_ARG_PRESENT=0
 
-OPTS="vduhsxki:r:l:p:g:u:c:t:"
+OPTS="vdbauhsxki:r:l:p:g:u:c:t:"
 
 function output_running {
 	printf "${PURPLE}--> ${COLOR_OFF}$1\n" 1>&2
@@ -142,6 +144,8 @@ OPTIONS:
    -l      Development mode only: path in which to search for git repos of roles, to symlink to the roles directory.
    -s      Skip role install.
    -x      Force interactive creation of $CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME, even if it already exists.
+   -a      Create an OSX app shortcut in /Applications to run osxstrap.
+   -b      
 EOF
 }
 
@@ -467,6 +471,56 @@ function update {
 	install_roles
 }
 
+function create_osx_app_shortcut {
+	if [ "$CREATE_OSX_APP_SHORTCUT" = 1 ]; then
+		output_header "Creating OSX app shortcut"
+		OSX_APP_DIR="/Applications/osxstrap.app/Contents/MacOS"
+		mkdir -p "$OSX_APP_DIR"
+		cat > $OSX_APP_DIR/osxstrap <<- EOM
+#!/bin/bash
+osascript -e 'tell app "Terminal" to do script "\"'"$INSTALL_DIR/osxstrap"'\""'
+	EOM
+		chmod +x "$OSX_APP_DIR/osxstrap"
+		if [ -f "$OSX_APP_DIR/osxstrap" ]; then
+			output_success "Created '/Applications/osxstrap.app'."
+		fi
+	fi
+}
+
+function create_usr_bin_shortcut {
+	if [ "$CREATE_USR_BIN_SHORTCUT" = 1 ]; then
+		output_header "Creating command line shortcuts to osxstrap."
+		SHORTCUT_SCRIPT_DIR="$INSTALL_DIR/bin"
+		SHORTCUT_SCRIPT_PATH="$SHORTCUT_SCRIPT_DIR/osxstrap"
+		output_running "Creating '$SHORTCUT_SCRIPT_PATH'."
+		mkdir -p $SHORTCUT_SCRIPT_DIR
+		cat > "$SHORTCUT_SCRIPT_PATH" <<- EOM
+#!/bin/bash
+ORIGINAL_PWD=\$PWD
+cd "$INSTALL_DIR" && sh osxstrap "\$@" -i "$INSTALL_DIR"
+cd \$ORIGINAL_PWD
+	EOM
+		chmod +x "$SHORTCUT_SCRIPT_PATH"
+
+		output_running "Creating '$SHORTCUT_SCRIPT_DIR/osxstrap-update'."
+		echo "#!/bin/bash\nosxstrap -u" > "$SHORTCUT_SCRIPT_DIR/osxstrap-update"
+		chmod +x "$SHORTCUT_SCRIPT_DIR/osxstrap-update"
+		
+		if [ -f "$SHORTCUT_SCRIPT_PATH" ]; then
+			output_success "Created scripts in '$SHORTCUT_SCRIPT_DIR'."
+		fi
+
+		output_running "Attempting to add $INSTALL_DIR/bin to \$PATH"
+		if [ ! -f "$INSTALL_DIR/bin/.installed" ]; then
+			if [ -f $HOME/.zshrc ]; then
+		    	echo "\nexport PATH=\"\$PATH:$INSTALL_DIR/bin\"" >> $HOME/.zshrc
+		    fi
+			echo "\nexport PATH=\"\$PATH:$INSTALL_DIR/bin\"" >> $HOME/.bash_profile
+			echo "" > "$INSTALL_DIR/bin/.installed"
+		fi
+	fi
+}
+
 banner
 
 while getopts "$OPTS" OPTION
@@ -490,6 +544,12 @@ do
 			;;
 		k)
 			FORCE_SUDO_PROMPT=1
+			;;
+		a)
+			CREATE_OSX_APP_SHORTCUT=1
+			;;
+		b)
+			CREATE_USR_BIN_SHORTCUT=1
 			;;
 		u)
 			update
@@ -576,6 +636,10 @@ install_pip
 install_ansible
 
 install_osxstrap
+
+create_osx_app_shortcut
+
+create_usr_bin_shortcut
 
 if [ $SKIP_ROLE_INSTALL != 1 ] ; then
 	install_roles
