@@ -23,9 +23,10 @@ INSTALL_DIR_DEFAULT=$INSTALL_DIR
 ROLES_DIR="$INSTALL_DIR/roles"
 ROLES_DIR_DEFAULT=$ROLES_DIR
 FORCE_CREATE_OSXSTRAP_CONFIG=0
+ENFORCE_COPY_CONFIG_FILE_EXISTS=0
 FORCE_SUDO_PROMPT=0
 CREATE_OSX_APP_SHORTCUT=0
-CREATE_USR_BIN_SHORTCUT=0
+CREATE_CLI_SHORTCUT=0
 PLAYBOOK_TAGS=""
 
 # Config file defaults
@@ -47,12 +48,13 @@ DEV_ROLE_NAME_REPLACE_STRING="jeremyltn."
 
 CONFIG_DIRNAME="config"
 OSXSTRAP_CONFIG_FILENAME="osxstrap.yml"
+OSXSTRAP_CONFIG_SEARCH_FILENAME="osxstrap.yml"
 
 ORIGINAL_PWD=$PWD
 
 URL_ARG_PRESENT=0
 
-OPTS="vdbauhsxki:r:l:p:g:u:c:t:"
+OPTS="vdmbauhsxki:r:l:p:g:u:c:t:y:"
 
 function output_running {
 	printf "${PURPLE}--> ${COLOR_OFF}$1\n" 1>&2
@@ -145,7 +147,9 @@ OPTIONS:
    -s      Skip role install.
    -x      Force interactive creation of $CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME, even if it already exists.
    -a      Create an OSX app shortcut in /Applications to run osxstrap.
-   -b      
+   -b      Install 'osxstrap' command system wide.
+   -y      Name of config file to look for in directory that this script is run, to move to osxstraps config directory.
+   -m      Abort if config file to copy from current directory (filename can be set with -y, defaults to osxstrap.yml) is not found.
 EOF
 }
 
@@ -285,8 +289,16 @@ function copy_config {
 		output_running "Copying files in '$ORIGINAL_PWD/$CONFIG_DIRNAME' to '$INSTALL_DIR/$CONFIG_DIRNAME'."
 		warn_on_error "cp -r $ORIGINAL_PWD/$CONFIG_DIRNAME/* $INSTALL_DIR/$CONFIG_DIRNAME/"
 	else
-		output_debug "Did not find $CONFIG_DIRNAME directory next to current script ($ORIGINAL_PWD/$CONFIG_DIRNAME), nothing to copy."
+		output_debug "Did not find $CONFIG_DIRNAME directory next to current script ($ORIGINAL_PWD/$CONFIG_DIRNAME), no directory to copy."
 	fi
+	if [ -f "$ORIGINAL_PWD/$OSXSTRAP_CONFIG_SEARCH_FILENAME" ]; then
+		output_debug "Found $OSXSTRAP_CONFIG_SEARCH_FILENAME next to current script ($ORIGINAL_PWD/$OSXSTRAP_CONFIG_SEARCH_FILENAME)."
+		output_running "Moving '$ORIGINAL_PWD/$OSXSTRAP_CONFIG_SEARCH_FILENAME' to '$INSTALL_DIR/$CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME'."
+		fail_on_error "cp $ORIGINAL_PWD/$OSXSTRAP_CONFIG_SEARCH_FILENAME $INSTALL_DIR/$CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME"
+	else
+		output_debug "Did not find $OSXSTRAP_CONFIG_SEARCH_FILENAME next to current script ($ORIGINAL_PWD/$OSXSTRAP_CONFIG_SEARCH_FILENAME), no file to copy."
+	fi
+
 }
 
 function check_osxstrap_config {
@@ -487,8 +499,8 @@ osascript -e 'tell app "Terminal" to do script "\"'"$INSTALL_DIR/osxstrap"'\""'
 	fi
 }
 
-function create_usr_bin_shortcut {
-	if [ "$CREATE_USR_BIN_SHORTCUT" = 1 ]; then
+function create_cli_shortcut {
+	if [ "$CREATE_CLI_SHORTCUT" = 1 ]; then
 		output_header "Creating command line shortcuts to osxstrap."
 		SHORTCUT_SCRIPT_DIR="$INSTALL_DIR/bin"
 		SHORTCUT_SCRIPT_PATH="$SHORTCUT_SCRIPT_DIR/osxstrap"
@@ -549,7 +561,10 @@ do
 			CREATE_OSX_APP_SHORTCUT=1
 			;;
 		b)
-			CREATE_USR_BIN_SHORTCUT=1
+			CREATE_CLI_SHORTCUT=1
+			;;
+		m)
+			ENFORCE_COPY_CONFIG_FILE_EXISTS=1
 			;;
 		u)
 			update
@@ -557,6 +572,9 @@ do
 			;;
 		i)
 			INSTALL_DIR=$OPTARG
+			;;
+		y)
+			OSXSTRAP_CONFIG_SEARCH_FILENAME=$OPTARG
 			;;
 		r)
 			REPO_URL=$OPTARG
@@ -586,6 +604,11 @@ do
 	esac
 done
 
+if [ "$ENFORCE_COPY_CONFIG_FILE_EXISTS" = 1 ] ; then
+	if [ ! -f "$ORIGINAL_PWD/$OSXSTRAP_CONFIG_SEARCH_FILENAME" ]; then
+		error "$OSXSTRAP_CONFIG_SEARCH_FILENAME not found in current directory ($ORIGINAL_PWD). Enforcing that this file exists is enabled (-m flag)."
+	fi
+fi
 if [ "$DEV_INSTALL" = 1 ] ; then
 	output_debug "Detected dev install (-d) flag."
 	output_debug "Setting install directory to directory of this script ($PWD) for development."
@@ -639,7 +662,7 @@ install_osxstrap
 
 create_osx_app_shortcut
 
-create_usr_bin_shortcut
+create_cli_shortcut
 
 if [ $SKIP_ROLE_INSTALL != 1 ] ; then
 	install_roles

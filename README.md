@@ -58,6 +58,17 @@ osxstrap provides an easier way to provision your OSX El Capitan workstation usi
 
 -x      Force interactive creation of config/osxstrap.yml,
         even if it already exists.
+
+-a      Create an OSX app shortcut in /Applications to run osxstrap.
+
+-b      Install 'osxstrap' command system wide.
+
+-y      Name of config file to look for in directory that 
+        this script is run, to move to osxstraps config directory.
+
+-m      Abort if config file to copy from current directory 
+        (filename can be set with -y, defaults to osxstrap.yml) is 
+        not found.
 ```
 
 ## What's Included
