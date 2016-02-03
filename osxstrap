@@ -25,8 +25,6 @@ ROLES_DIR_DEFAULT=$ROLES_DIR
 FORCE_CREATE_OSXSTRAP_CONFIG=0
 ENFORCE_COPY_CONFIG_FILE_EXISTS=0
 FORCE_SUDO_PROMPT=0
-CREATE_OSX_APP_SHORTCUT=0
-CREATE_CLI_SHORTCUT=0
 PLAYBOOK_TAGS=""
 
 # Config file defaults
@@ -54,7 +52,7 @@ ORIGINAL_PWD=$PWD
 
 URL_ARG_PRESENT=0
 
-OPTS="vdmbauhsxki:r:l:p:g:u:c:t:y:"
+OPTS="vdmuhsxki:r:l:p:g:u:c:t:y:"
 
 function output_running {
 	printf "${PURPLE}--> ${COLOR_OFF}$1\n" 1>&2
@@ -146,8 +144,6 @@ OPTIONS:
    -l      Development mode only: path in which to search for git repos of roles, to symlink to the roles directory.
    -s      Skip role install.
    -x      Force interactive creation of $CONFIG_DIRNAME/$OSXSTRAP_CONFIG_FILENAME, even if it already exists.
-   -a      Create an OSX app shortcut in /Applications to run osxstrap.
-   -b      Install 'osxstrap' command system wide.
    -y      Name of config file to look for in directory that this script is run, to move to osxstraps config directory.
    -m      Abort if config file to copy from current directory (filename can be set with -y, defaults to osxstrap.yml) is not found.
 EOF
@@ -556,12 +552,6 @@ do
 			;;
 		k)
 			FORCE_SUDO_PROMPT=1
-			;;
-		a)
-			CREATE_OSX_APP_SHORTCUT=1
-			;;
-		b)
-			CREATE_CLI_SHORTCUT=1
 			;;
 		m)
 			ENFORCE_COPY_CONFIG_FILE_EXISTS=1
