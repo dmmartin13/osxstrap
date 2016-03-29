@@ -42,7 +42,7 @@ def update():
 
 @cli.command()
 @click.option('--config-file-path', '-c', default=False, help='Path of downloaded config file to copy into place.')
-def init():
+def init(config_file_path):
 	copy_config(config_file_path)
 	update()
 	ansible.playbook(install_path, 'all', True, False)
