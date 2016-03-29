@@ -5,3 +5,4 @@
       tags: ['common','always']
       include_vars_dir_paths:
         - "~/.config/osxstrap"
+      include_vars_file_extension: "osxstrap"
