@@ -49,7 +49,6 @@ def init(c):
 
 
 def copy_config(source_path):
-	source_path = os.path.join(os.path.dirname(__file__), source_path)
 	destination_path = os.path.join(config_path, os.path.basename(source_path))
 	if not source_path == False:
 		if os.path.exists(source_path):
