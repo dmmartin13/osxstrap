@@ -186,7 +186,7 @@ function install_osxstrap {
 	output_header "Installing/Updating osxstrap"
 	output_running "Creating install directory '$INSTALL_DIR'."
 	if [ "$DEV_INSTALL" = 0 ]; then
-		fail_on_error "mkdir -p $INSTALL_DIR"
+		fail_on_error "mkdir -p '$INSTALL_DIR'"
 		if [ -d "$INSTALL_DIR/.git" ]; then
 			output_running "Updating osxstrap core using git"
 			cd "$INSTALL_DIR"
