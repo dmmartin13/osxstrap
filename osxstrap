@@ -186,7 +186,7 @@ function install_osxstrap {
 	output_header "Installing/Updating osxstrap"
 	output_running "Creating install directory '$INSTALL_DIR'."
 	if [ "$DEV_INSTALL" = 0 ]; then
-		fail_on_error "mkdir -p '$INSTALL_DIR'"
+		mkdir -p "$INSTALL_DIR"
 		if [ -d "$INSTALL_DIR/.git" ]; then
 			output_running "Updating osxstrap core using git"
 			cd "$INSTALL_DIR"
@@ -204,14 +204,16 @@ function install_osxstrap {
 function install_osxstrap_command {
 	output_header "Installing osxstrap command"
 	if ! exists osxstrap; then
-		fail_on_error "sudo pip install -e '$INSTALL_DIR/cli'"
+		fail_on_error "sudo pip install -e cli"
 	else
+		cd "$INSTALL_DIR"
 		output_skip "osxstrap command already installed."
 	fi
 }
 
 function init_osxstrap {
 	output_header "Running osxstrap init"
+	cd "$ORIGINAL_PWD"
 	fail_on_error "osxstrap init -c $CONFIG_FILE_PATH"
 }
 

@@ -12,15 +12,13 @@ import click
 
 import shutil
 
-import command
+import common
 
 import output
 
 import ansible
 
 from shutil import copyfile
-
-#from config import config, save_user_config, user_config_keys
 
 install_path = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
