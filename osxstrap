@@ -260,10 +260,6 @@ if [ "$VERBOSE" = 1 ] ; then
 	output_debug "Detected verbose (-v) flag."
 fi
 
-if [ $INSTALL_DIR != "$INSTALL_DIR_DEFAULT" ] ; then
-	output_debug "Detected changed install dir."
-fi
-
 output_debug "Install directory is '$INSTALL_DIR'."
 
 output_debug "Git repo URL is '$REPO_URL'."
