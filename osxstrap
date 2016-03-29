@@ -15,7 +15,7 @@ COLOR_OFF='\e[0m'
 # Command line arg defaults
 REPO_URL="https://github.com/osxstrap/osxstrap"
 VERBOSE=0
-INSTALL_DIR="$HOME/Library/Application\ Support/osxstrap"
+INSTALL_DIR="$HOME/Library/Application Support/osxstrap"
 INSTALL_DIR_DEFAULT=$INSTALL_DIR
 DEV_INSTALL=0
 CONFIG_FILE_PATH=""
