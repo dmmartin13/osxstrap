@@ -10,7 +10,7 @@ import subprocess
 
 import output
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, set_key
 
 dotenv_file_path = os.path.join(os.path.expanduser("~"), '.osxstrap')
 
@@ -30,6 +30,10 @@ def write_default_dotenv():
     f.write("OSXSTRAP_ASK_SUDO_PASS=1\n")
     f.write("OSXSTRAP_ASK_VAULT_PASS=0\n")
     f.close();
+
+
+def set_dotenv_key(key_to_set, value_to_set):
+    set_key(dotenv_file_path, key_to_set, value_to_set)
 
 
 def mkdir(directory):
