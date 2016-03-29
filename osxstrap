@@ -213,7 +213,7 @@ function install_osxstrap_command {
 function init_osxstrap {
 	output_header "Running osxstrap init"
 	cd "$ORIGINAL_PWD"
-	fail_on_error "osxstrap init -c \"$CONFIG_FILE_PATH\""
+	fail_on_error "osxstrap init -c $CONFIG_FILE_PATH"
 }
 
 banner
