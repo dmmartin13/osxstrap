@@ -25,16 +25,19 @@ from shutil import copyfile
 install_path = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 config_path = os.path.join(os.path.expanduser("~"), '.config', 'osxstrap')
+
 config_filename = 'main.osxstrap'
+
 
 @click.group(invoke_without_command=True)
 @click.pass_context
 @click.option('--playbook', '-p', default='all', help='Playbook to run.')
-@click.option('--ask-sudo-pass', '-k', default=True, is_flag=True, help='Have Ansible prompt you for a sudo password.')
+@click.option('--ask-sudo-pass', '-k', default=False, is_flag=True, help='Have Ansible prompt you for a sudo password.')
 @click.option('--ask-vault-pass', '-v', default=False, is_flag=True, help='Have Ansible prompt you for a vault password.')
 def cli(ctx, playbook, ask_sudo_pass, ask_vault_pass):
-    if ctx.invoked_subcommand is None:
-    	ansible.playbook(install_path, playbook, ask_sudo_pass, ask_vault_pass)
+	common.get_dotenv()
+	if ctx.invoked_subcommand is None:	
+		ansible.playbook(install_path, playbook, ask_sudo_pass, ask_vault_pass)
 
 
 @cli.command()

@@ -28,7 +28,8 @@ setup(
         'Click',
         'colorama',
         'ansible==1.9.4',
-        'jinja2'
+        'jinja2',
+        'python-dotenv'
     ],
     package_data = {'osxstrap' : files },
     entry_points = {

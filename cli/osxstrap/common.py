@@ -10,6 +10,27 @@ import subprocess
 
 import output
 
+from dotenv import load_dotenv
+
+dotenv_file_path = os.path.join(os.path.expanduser("~"), '.osxstrap')
+
+
+def get_dotenv():
+    check_dotenv()
+    load_dotenv(dotenv_file_path)
+
+    
+def check_dotenv():
+    if not os.path.exists(dotenv_file_path):
+        write_default_dotenv()
+
+
+def write_default_dotenv():
+    f = open(dotenv_file_path, 'w')
+    f.write("OSXSTRAP_ASK_SUDO_PASS=1\n")
+    f.write("OSXSTRAP_ASK_VAULT_PASS=0\n")
+    f.close();
+
 
 def mkdir(directory):
     if not os.path.exists(directory):
