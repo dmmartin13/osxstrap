@@ -189,11 +189,11 @@ function install_osxstrap {
 		fail_on_error "mkdir -p $INSTALL_DIR"
 		if [ -d "$INSTALL_DIR/.git" ]; then
 			output_running "Updating osxstrap core using git"
-			cd $INSTALL_DIR
+			cd "$INSTALL_DIR"
 			warn_on_error "git pull -q"
 		else
 			output_running "Cloning osxstrap core from $REPO_URL"
-			cd $INSTALL_DIR
+			cd "$INSTALL_DIR"
 			fail_on_error "git clone -q $REPO_URL ."
 		fi
 	else
