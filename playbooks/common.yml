@@ -1,11 +1,7 @@
 ---
 - hosts: all
-  vars_files:
-    - '../config/osxstrap.yml'
   roles:
     - role: jeremyltn.include-vars-dir
       tags: ['common','always']
       include_vars_dir_paths:
-        - "{{ osxstrap.local_yml_path }}"
-        - "{{ osxstrap.git_repo.dest }}"
-        - "../config"
+        - "~/.config/osxstrap"
