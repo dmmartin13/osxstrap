@@ -22,7 +22,7 @@ from shutil import copyfile
 
 install_path = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
-main_config_path = os.path.join(os.path.expanduser("~"), '.config', 'osxstrap', 'config.osxstrap')
+config_path = os.path.join(os.path.expanduser("~"), '.config', 'osxstrap')
 
 @click.group(invoke_without_command=True)
 @click.pass_context
@@ -41,20 +41,21 @@ def update():
 
 
 @cli.command()
-@click.option('--config-file-path', '-c', default=False, help='Path of downloaded config file to copy into place.')
-def init(config_file_path):
-	copy_config(config_file_path)
-	update()
+@click.option('-c', default=False, required=True, help='Path of downloaded config file to copy into place.')
+def init(c):
+	copy_config(c)
+	ansible.galaxy_install(install_path)
 	ansible.playbook(install_path, 'all', True, False)
 
 
 def copy_config(source_path):
+	destination_path = os.path.join(config_path, os.path.basename(source_path))
 	if not source_path == False:
 		if os.path.exists(source_path):
-			if not os.path.exists(main_config_path):
-				common.mkdir(os.path.join(main_config_path, os.pardir))
-				copyfile(source_path, main_config_path)
+			if not os.path.exists(destination_path):
+				common.mkdir(config_path)
+				copyfile(source_path, destination_path)
 			else:
-				output.error("%s already exists, not copying input file %s." % (main_config_path, source_path))
+				output.error("%s already exists, not copying input file %s." % (destination_path, source_path))
 		else:
 			output.error("Input file %s does not exist." % source_path)
