@@ -3,10 +3,13 @@
 
 - include: remote-vars.yml
 - include: include-vars-dir.yml
+- include: osx-common-env.yml
 - include: osx-oh-my-zsh.yml
+- include: osx-fish.yml
 - include: gitconfig.yml
 - include: dotfiles.yml
 - include: osx-defaults.yml
+- include: osx-user-picture.yml
 
 - include: osx-computername.yml
 - include: osx-sudoers.yml

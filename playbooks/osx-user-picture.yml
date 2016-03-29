@@ -1,0 +1,5 @@
+---
+- hosts: all
+  roles:
+    - role: jeremyltn.osx-user-picture
+      tags: ['osx_user_picture']

@@ -38,3 +38,12 @@
 
 - src: https://github.com/osxstrap/ansible-osx-sublimetext.git
   name: jeremyltn.osx-sublimetext
+
+- src: https://github.com/osxstrap/ansible-osx-common-env.git
+  name: jeremyltn.osx-common-env
+
+- src: https://github.com/osxstrap/ansible-osx-fish.git
+  name: jeremyltn.osx-fish
+
+- src: https://github.com/osxstrap/ansible-osx-user-picture.git
+  name: jeremyltn.osx-user-picture
