@@ -204,7 +204,7 @@ function install_osxstrap {
 function install_osxstrap_command {
 	output_header "Installing osxstrap command"
 	if ! exists osxstrap; then
-		fail_on_error "sudo pip install -e $INSTALL_DIR/cli"
+		fail_on_error "sudo pip install -e '$INSTALL_DIR/cli'"
 	else
 		output_skip "osxstrap command already installed."
 	fi
