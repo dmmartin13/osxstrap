@@ -51,6 +51,7 @@ def init(config_file_path):
 def copy_config(source_path):
 	if not source_path == False:
 		if os.path.exists(source_path):
+			common.mkdir(os.path.join(main_config_path, os.pardir))
 			copyfile(source_path, main_config_path)
 		else:
 			return False
