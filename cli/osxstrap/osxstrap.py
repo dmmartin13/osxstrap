@@ -51,7 +51,10 @@ def init(config_file_path):
 def copy_config(source_path):
 	if not source_path == False:
 		if os.path.exists(source_path):
-			common.mkdir(os.path.join(main_config_path, os.pardir))
-			copyfile(source_path, main_config_path)
+			if not os.path.exists(main_config_path):
+				common.mkdir(os.path.join(main_config_path, os.pardir))
+				copyfile(source_path, main_config_path)
+			else:
+				output.error("%s already exists, not copying input file %s." % (main_config_path, source_path))
 		else:
-			return False
+			output.error("Input file %s does not exist." % source_path)
