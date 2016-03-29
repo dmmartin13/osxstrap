@@ -6,7 +6,6 @@ import os
 
 import output
 
-
 import common
 
 def galaxy_install(install_path):
