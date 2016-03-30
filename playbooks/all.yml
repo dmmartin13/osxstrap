@@ -13,6 +13,7 @@
 
 - include: osx-computername.yml
 - include: osx-sudoers.yml
+- include: osx-ssd.yml
 
 - include: homebrew.yml
 - include: osx-sublimetext.yml

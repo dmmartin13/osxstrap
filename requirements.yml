@@ -47,3 +47,6 @@
 
 - src: https://github.com/osxstrap/ansible-osx-user-picture.git
   name: jeremyltn.osx-user-picture
+
+- src: https://github.com/osxstrap/ansible-osx-ssd.git
+  name: jeremyltn.osx-ssd
