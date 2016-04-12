@@ -3,6 +3,7 @@
 
 - include: remote-vars.yml
 - include: include-vars-dir.yml
+- include: homebrew.yml
 - include: osx-common-env.yml
 - include: osx-oh-my-zsh.yml
 - include: osx-fish.yml
@@ -14,7 +15,6 @@
 - include: osx-computername.yml
 - include: osx-sudoers.yml
 
-- include: homebrew.yml
 - include: osx-sublimetext.yml
 - include: osx-php.yml
 - include: pip.yml

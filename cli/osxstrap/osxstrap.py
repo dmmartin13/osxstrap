@@ -26,9 +26,9 @@ from github3 import authorize,login
 
 install_path = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
-config_path = os.path.join(os.path.expanduser("~"), '.config', 'osxstrap')
+config_path = os.path.join(os.path.expanduser("~"), '.osxstrap')
 
-config_filename = 'main.osxstrap'
+config_filename = 'config.yml'
 
 
 @click.group(invoke_without_command=True)
