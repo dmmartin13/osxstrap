@@ -12,7 +12,16 @@ import output
 
 from dotenv import load_dotenv, set_key
 
-dotenv_file_path = os.path.join(os.path.expanduser("~"), '.osxstrap', '.env')
+config_path = os.path.join(os.path.expanduser("~"), '.osxstrap')
+
+dotenv_file_path = os.path.join(config_path, '.env')
+
+if not os.path.exists(dotenv_file_path):
+    if not os.path.exists(config_path):
+        mkdir(config_path)
+    f = open(dotenv_file_path, 'w')
+    f.write("# osxstrap dotenv file\n")
+    f.close();
 
 
 def get_dotenv():
