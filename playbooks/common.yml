@@ -4,5 +4,5 @@
     - role: jeremyltn.include-vars-dir
       tags: ['common','always']
       include_vars_dir_paths:
-        - "~/.config/osxstrap"
-      include_vars_file_extension: "osxstrap"
+        - "~/.osxstrap/"
+      include_vars_file_extension: "yml"
