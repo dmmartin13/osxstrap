@@ -29,7 +29,8 @@ setup(
         'colorama',
         'ansible==1.9.4',
         'simplegist',
-        'python-dotenv'
+        'python-dotenv',
+        'github3'
     ],
     package_data = {'osxstrap' : files },
     entry_points = {
