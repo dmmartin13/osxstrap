@@ -30,7 +30,7 @@ setup(
         'ansible==1.9.4',
         'simplegist',
         'python-dotenv',
-        'github3'
+        'github3.py'
     ],
     package_data = {'osxstrap' : files },
     entry_points = {
