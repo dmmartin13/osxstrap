@@ -18,7 +18,7 @@ version = re.search(
 with open("README.md", "rb") as f:
     long_descr = f.read().decode("utf-8")
 
-files = ['config/base.yml']
+files = ['ansible/*']
 
 setup(
     name = "osxstrap",
@@ -37,7 +37,7 @@ setup(
         "console_scripts": ['osxstrap = osxstrap.osxstrap:cli']
         },
     version = version,
-    description = "osxstrap.",
+    description = "Better OSX provisioning using Ansible.",
     long_description = long_descr,
     author = "Jeremy Litten",
     author_email = "jeremy.litten@gmail.com",
