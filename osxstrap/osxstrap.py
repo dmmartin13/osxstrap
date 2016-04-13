@@ -3,7 +3,7 @@
 """osxstrap.osxstrap: provides entry point main()."""
 
 
-__version__ = "0.0.21"
+__version__ = "0.0.31"
 
 
 import os
@@ -24,7 +24,9 @@ from shutil import copyfile
 
 from github3 import authorize,login
 
-install_path = os.path.realpath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+base_path = os.path.dirname(__file__)
+
+install_path = os.path.realpath(os.path.join(base_path, 'ansible'))
 
 config_path = os.path.join(os.path.expanduser("~"), '.osxstrap')
 
@@ -44,12 +46,12 @@ def cli(ctx, playbook, ask_sudo_pass, ask_vault_pass):
 
 @cli.command()
 def update():
-    common.run('git pull origin master')
+    common.run('sudo pip install osxstrap -U')
     ansible.galaxy_install(install_path)
 
 
 @cli.command()
-@click.option('-c', '--config-file', default=False, required=True, help='Path of downloaded config file to copy into place.')
+@click.option('-c', '--config-file', default=None, required=True, help='Path of downloaded config file to copy into place.')
 def init(config_file):
     copy_config(config_file)
     ansible.galaxy_install(install_path)
@@ -57,9 +59,10 @@ def init(config_file):
 
 
 def copy_config(source_path):
-    source_path = os.path.join(os.getcwd(), source_path)
+    if not os.path.isabs(source_path):
+        source_path = os.path.join(os.getcwd(), source_path)
     destination_path = os.path.join(config_path, config_filename)
-    if not source_path == False:
+    if source_path and source_path != destination_path:
         if os.path.exists(source_path):
             if not os.path.exists(destination_path):
                 common.mkdir(config_path)

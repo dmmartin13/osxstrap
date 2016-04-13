@@ -1,11 +1,12 @@
 ---
 - hosts: all
+  vars:
+    include_vars_dir_paths:
+      - "~/.osxstrap"
+    include_vars_file_extension: "yml"
   roles:
     - role: jeremyltn.include-vars-dir
       tags: ['common','always']
-      include_vars_dir_paths:
-        - "~/.osxstrap/"
-      include_vars_file_extension: "yml"
     - role: jeremyltn.remote-vars
       tags: ['remote_vars']
     - role: jeremyltn.include-vars-dir

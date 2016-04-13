@@ -66,3 +66,5 @@ playbooks/debugging.yml
 # vars files downloaded by install script
 host_vars/
 group_vars/
+
+osxstrap/ansible/roles

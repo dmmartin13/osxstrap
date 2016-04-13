@@ -203,10 +203,15 @@ function install_osxstrap {
 
 function install_osxstrap_command {
 	output_header "Installing osxstrap command"
-	if ! exists osxstrap; then
-		fail_on_error "sudo pip install -e cli"
+	if [ "$DEV_INSTALL" = 0 ]; then
+		if ! exists osxstrap; then
+			fail_on_error "sudo pip install osxstrap"
+		else
+			output_skip "osxstrap command already installed, checking for updates."
+			fail_on_error "sudo pip install osxstrap -U"
+		fi
 	else
-		output_skip "osxstrap command already installed."
+		fail_on_error "sudo pip install -e ."
 	fi
 }
 
