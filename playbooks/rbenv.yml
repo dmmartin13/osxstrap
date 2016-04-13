@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-    - role: jeremyltn.rbenv
-      tags: ['rbenv']

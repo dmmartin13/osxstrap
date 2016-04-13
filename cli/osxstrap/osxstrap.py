@@ -33,7 +33,7 @@ config_filename = 'config.yml'
 
 @click.group(invoke_without_command=True)
 @click.pass_context
-@click.option('--playbook', '-p', default='all', help='Playbook to run.')
+@click.option('--playbook', '-p', default='playbook', help='Playbook to run.')
 @click.option('--ask-sudo-pass', '-k', default=False, is_flag=True, help='Have Ansible prompt you for a sudo password.')
 @click.option('--ask-vault-pass', '-v', default=False, is_flag=True, help='Have Ansible prompt you for a vault password.')
 def cli(ctx, playbook, ask_sudo_pass, ask_vault_pass):
@@ -53,7 +53,7 @@ def update():
 def init(config_file):
     copy_config(config_file)
     ansible.galaxy_install(install_path)
-    ansible.playbook(install_path, 'all', True, False)
+    ansible.playbook(install_path, 'playbook', True, False)
 
 
 def copy_config(source_path):

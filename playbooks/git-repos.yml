@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-    - role: jeremyltn.git-repos
-      tags: ['git_repos']

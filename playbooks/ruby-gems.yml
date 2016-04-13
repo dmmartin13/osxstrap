@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-    - role: jeremyltn.ruby-gems
-      tags: ['ruby_gems']

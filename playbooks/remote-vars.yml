@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-    - role: jeremyltn.remote-vars
-      tags: ['remote_vars']

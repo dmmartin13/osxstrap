@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-    - role: jeremyltn.osx-common-env
-      tags: ['osx_common_env']

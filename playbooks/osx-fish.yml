@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-    - role: jeremyltn.osx-fish
-      tags: ['osx_fish']

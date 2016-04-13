@@ -50,3 +50,6 @@
 
 - src: https://github.com/osxstrap/ansible-osx-ssd.git
   name: jeremyltn.osx-ssd
+
+- src: https://github.com/osxstrap/ansible-osx-software-update.git
+  name: jeremyltn.osx-software-update

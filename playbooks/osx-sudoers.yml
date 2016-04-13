@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-    - role: jeremyltn.osx-sudoers
-      tags: ['osx_sudoers']
