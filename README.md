@@ -2,8 +2,10 @@
 
 Everything you need to provision your OSX workstation in a standardized, modern, and easily customizable way, powered by Ansible.
 
-## Quick Start
- 
+## Usage
+
+See https://osxstrap.org
+
 ## Issues
 
 Please report any issues to this repositories issue tracker https://github.com/osxstrap/osxstrap/issues.
