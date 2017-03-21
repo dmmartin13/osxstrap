@@ -205,13 +205,13 @@ function install_osxstrap_command {
 	output_header "Installing osxstrap command"
 	if [ "$DEV_INSTALL" = 0 ]; then
 		if ! exists osxstrap; then
-			fail_on_error "sudo pip install osxstrap"
+			fail_on_error "sudo pip install osxstrap --ignore-installed six"
 		else
 			output_skip "osxstrap command already installed, checking for updates."
-			fail_on_error "sudo pip install osxstrap -U"
+			fail_on_error "sudo pip install osxstrap -U --ignore-installed six"
 		fi
 	else
-		fail_on_error "sudo pip install -e ."
+		fail_on_error "sudo pip install -e . --ignore-installed six"
 	fi
 }
 
