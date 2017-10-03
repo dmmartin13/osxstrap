@@ -154,24 +154,40 @@ function install_clt {
 	fi
 }
 
-function install_pip {
-	output_header "Installing pip"
-	if ! exists pip; then
-		fail_on_error "sudo easy_install --quiet pip"
-		if ! exists pip; then
-			error "Error installing pip."
+function install_brew {
+    output_header "Installing HomeBrew"
+	if ! exists brew; then
+		fail_on_error '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+		if ! exists brew; then
+			error "Error installing HomeBrew."
 		else
-			output_success "pip successfully installed."
+			output_success "HomeBrew successfully installed."
 		fi
 	else
-		output_skip "pip already installed."
+		output_skip "HomeBrew already installed."
+	fi
+}
+
+function install_pip {
+	output_header "Installing python and pip"
+	if ! exists pip; then
+		fail_on_error "brew install python"
+		fail_on_error 'echo "export PATH=/usr/local/bin:$PATH" >> ~/.bash_profile'
+		fail_on_error 'echo "export PATH=/usr/local/share/python:$PATH" >> ~/.bash_profile'
+		if ! exists pip; then
+			error "Error installing Python."
+		else
+			output_success "Python successfully installed."
+		fi
+	else
+		output_skip "Python already installed."
 	fi
 }
 
 function install_ansible {
 	output_header "Installing Ansible"
 	if ! exists ansible; then
-		fail_on_error "sudo pip install -I ansible==1.9.4"
+		fail_on_error "pip install -I ansible"
 		if ! exists ansible; then
 			error "Error installing Ansible."
 		else
@@ -205,13 +221,13 @@ function install_osxstrap_command {
 	output_header "Installing osxstrap command"
 	if [ "$DEV_INSTALL" = 0 ]; then
 		if ! exists osxstrap; then
-			fail_on_error "sudo pip install osxstrap --ignore-installed six"
+			fail_on_error "pip install osxstrap --ignore-installed six"
 		else
 			output_skip "osxstrap command already installed, checking for updates."
-			fail_on_error "sudo pip install osxstrap -U --ignore-installed six"
+			fail_on_error "pip install osxstrap -U --ignore-installed six"
 		fi
 	else
-		fail_on_error "sudo pip install -e . --ignore-installed six"
+		fail_on_error "pip install -e . --ignore-installed six"
 	fi
 }
 
