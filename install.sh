@@ -174,6 +174,8 @@ function install_pip {
 		fail_on_error "brew install python"
 		fail_on_error 'echo "export PATH=/usr/local/bin:$PATH" >> ~/.bash_profile'
 		fail_on_error 'echo "export PATH=/usr/local/share/python:$PATH" >> ~/.bash_profile'
+		fail_on_error 'echo "export PATH="/usr/local/opt/python/libexec/bin:$PATH" >> ~/.bash_profile'
+		fail_on_error 'source ~/.bash_profile'
 		if ! exists pip; then
 			error "Error installing Python."
 		else
@@ -295,6 +297,8 @@ output_debug "Keep-alive: update existing sudo time stamp until we are finished"
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 install_clt
+
+install_brew
 
 install_pip
 
